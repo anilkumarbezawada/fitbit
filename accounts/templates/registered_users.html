@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {% load static %}
+    
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Add icon library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
+    
+        <title>FITBIT</title>
+
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 50%;
+            }
+            td, th {
+              border: 1px solid #dddddd;
+              text-align: center;
+              padding: 8px;
+            }
+            tr:nth-child(even) {
+              background-color: #D6EEEE;
+            }
+            .btn {
+              background-color: ForestGreen;
+              border: none;
+              color: white;
+              padding: 12px 30px;
+              cursor: pointer;
+              font-size: 20px;
+            }
+            
+            /* Darker background on mouse-over */
+            .btn:hover {
+              background-color: LimeGreen;
+            }
+            </style>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <!-- head title -->
+            <header>
+                <h5 class="head text-white text-center p-3">Registered Users</h5>
+
+              
+                <button hidden style="float: right;" onclick="copyToClipboard('#p1')">Share Link</button>
+                <button style="float: right;" onclick="copyToClipboard('#p1')" class="btn"><i class="fa fa-clipboard"></i> Share Link</button>
+                {% comment %} <p hidden id="p1">https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate&expires_in=31536000</p> {% endcomment %}
+                
+                <p hidden id="p1">http://127.0.0.1:8000/access/</p>
+            </header>
+
+            <table class="center">
+              <tr id='table_heading'>
+                  <th >NAME</th>
+                  <th >REGISTERED DATE</th>
+                  <th > </th>
+                  
+                </tr>
+                
+                {% for i in usersListResonse %}
+                <tr>
+                  <td>{{i.4}}</td>
+                  <td >{{i.3}}</td>
+                  <td ><a  href="{% url 'profiledashboard' %}?user_id={{i.1}}&aacc={{i.2}}"> View Details</a></td>
+                </tr>
+
+                
+                {% endfor %}
+                
+
+              </table>
+
+            <!-- navbar -->
+        </div>
+    </body>
+
+    <script>
+        function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+          }
+    
+    </script>
+
+</html>

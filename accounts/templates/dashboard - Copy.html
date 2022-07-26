@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {% load static %}
+    
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
+    
+        <title>FITBIT DASHBOARD</title>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <!-- head title -->
+            <header>
+                <h5 class="head text-white text-center p-3">FITBIT DASHBOARD</h5>
+            </header>
+
+            <strong>User Profile Data</strong>
+
+            <p>Name : <span id='add_name'></span></p>
+            <p>Age : <span id='add_age'></span></p>
+            <p>Date : <span id='add_dob'></span></p>
+           
+        </div>
+
+        <div class="container-fluid">
+            <strong>User Sleep Data</strong>
+
+            <div class="form-group row">
+
+                <label for="date" class="col-md-1 col-form-label">From Date :</label>
+                <div class="col-md-2">
+                  <input type="date" class="form-control" data-date="" data-date-format="DD MMMM YYYY" id="from_date" name='from_date' />
+                </div>
+
+                <label for="date" class="col-md-0 col-form-label">To Date :</label>
+                <div class="col-md-2">
+                  <input type="date" class="form-control" id="to_date" name='to_date' />
+                </div>
+				
+				<button class="btn btn-primary" id='fdbfbdn'>Submit</button>
+              
+              </div>
+
+            
+                <table>
+                    <tr>
+                      <th ">DATE</th>
+                      <th style="padding-left:10px;">START TIME</th>
+                      <th style="padding-left:10px;">END TIME</th>
+                      <th style="padding-left:10px;">Minutes Asleep</th>
+                      <th style="padding-left:10px;">Minutes Awake</th>
+                      <th style="padding-left:10px;">Number of Awakenings</th>
+                      <th style="padding-left:10px;">Time in Bed</th>
+                      <th style="padding-left:10px;">Minutes REM Sleep</th>
+                      <th style="padding-left:10px;">Minutes Light Sleep</th>
+                      <th style="padding-left:10px;">Minutes Deep Sleep</th>
+                    </tr>
+                    {% for i in sleepResult.sleep %}
+                    <tr>
+                      <td>{{i.dateOfSleep}}</td>
+                      <td style="padding-left:10px;">{{i.startTime}}</td>
+                      <td style="padding-left:10px;">{{i.endTime}}</td>
+                      <td style="padding-left:10px;">{{i.minutesAsleep}}</td>
+                      <td style="padding-left:10px;">{{i.minutesAwake}}</td>
+                      <td style="padding-left:10px;">check</td>
+                      <td style="padding-left:10px;">{{i.timeInBed}}</td>
+                      <td style="padding-left:10px;">{{i.levels.summary.rem.minutes}}</td>
+                      <td style="padding-left:10px;">{{i.levels.summary.light.minutes}}</td>
+                      <td style="padding-left:10px;">{{i.levels.summary.deep.minutes}}</td>
+                    </tr>
+                    {% endfor %}
+
+                  </table>
+            
+                  {% comment %} {{levels.summary.rem.minutes}} {% endcomment %}
+        </div>
+        
+    </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        submitform();
+        function submitform()
+        {   debugger;
+	
+		$.ajax({
+      		type : 'POST',
+      		url :  "{% url 'profiledashboard' %}",
+      		data : {csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+      		success : function(response){debugger
+			console.log(response.profileResult.user)
+			$('p span#add_name').append(response.profileResult.user.fullName);
+			$('p span#add_age').append(response.profileResult.user.age);
+			$('p span#add_dob').append(response.profileResult.user.dateOfBirth);
+			
+			
+			
+			
+      		},
+      		error : function(response){
+      			console.log(response)
+      		}
+      	});	
+      //document.getElementById("myForm").submit();
+	 // console.log('submit')
+    } 
+	
+	$('#fdbfbdn').click(function(){debugger
+	var fdate = $('#from_date').val();
+	var tdate = $('#to_date').val();
+	
+	$.ajax({
+      		type : 'POST',
+      		url :  "{% url 'getsleepdata' %}",
+      		data : {fdate : $('#from_date').val(),tdate : $('#to_date').val(),csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+      		success : function(response){debugger
+			console.log(response)
+			$.each(response, function(){
+			var html = "<tr><td>" + this.pathologie + "</td><td>" + this.mois+ "</td></tr>";
+			$('#myTable').append(html);
+			});
+			
+			
+      		},
+      		error : function(response){
+      			console.log(response)
+      		}
+      	});	
+	
+	
+	})
+    </script>
+
+</html>

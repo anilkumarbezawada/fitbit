@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {% load static %}
+    
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
+    
+        <title>FITBIT</title>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <!-- head title -->
+            <header>
+                <h5 class="head text-white text-center p-3">Welcome</h5>
+            </header>
+
+            <input class="center" type="button" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate&expires_in=31536000';" value="Connect Fitbit" />
+
+            <!-- navbar -->
+        </div>
+    </body>
+
+</html>

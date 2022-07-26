@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {% load static %}
+    
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
+    
+        <title>FITBIT DASHBOARD</title>
+        <style>
+          table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+          }
+          td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+          }
+          tr:nth-child(even) {
+            background-color: #D6EEEE;
+          }
+          </style>
+    </head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function fetch_access_token() {
+            var url = window.location.href;
+            //getting the access token from url 
+            var access_token = url.split("#")[1].split("=")[1].split("&")[0]; 
+            // get the userid 
+            var userId = url.split("#")[1].split("=")[2].split("&")[0]; 
+            console.log(access_token); 
+            {% comment %} alert(access_token); {% endcomment %}
+            console.log(userId);
+            $('#access1').text(access_token);
+            $('#access_token').val(access_token);
+        
+            method = "POST"; 
+            var form = document.createElement("form");
+            form.setAttribute("method", method);
+            form.setAttribute("action", "/viewdata/");
+
+        
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", "productId");
+            hiddenField.setAttribute("value", access_token);
+
+            var hiddenField1 = document.createElement("input");
+            hiddenField1.setAttribute("type", "hidden");
+            hiddenField1.setAttribute("name", "userId");
+            hiddenField1.setAttribute("value", userId);
+            
+            form.appendChild(hiddenField);
+            form.appendChild(hiddenField1);
+            
+            document.body.appendChild(form); 
+            form.submit();
+			event.preventDefault()
+        }
+        {% comment %} HtmlPage.Window.Invoke("addToCart3"); {% endcomment %}
+    
+    </script>
+
+    <body onload="fetch_access_token()">
+        <div class="container-fluid">
+            <!-- head title -->
+            <header>
+                <h5 class="head text-white text-center p-3">FITBIT DASHBOARD</h5>
+            </header>
+            
+            <div style="padding-left:20px;" class="form-group row">
+                <img  id="add_image" src="{{profileResult.user.avatar150}}" width="120" height="135"  />
+                <div class="col-md-4">
+                    <p>Name : <span id='add_name'>{{profileResult.user.fullName}}</span></p>
+                    <p>Age : <span id='add_age'>{{profileResult.user.age}}</span></p>
+                    <p>Date : <span id='add_dob'>{{profileResult.user.dateOfBirth}}</span></p>
+                </div>
+              
+              </div>
+           
+        </div>
+
+        <div class="container-fluid">
+            <strong>User Sleep Data</strong><br></br>
+
+            <div class="form-group row">
+
+                <label for="date" class="col-md-1 col-form-label">From Date :</label>
+                <div class="col-md-2">
+                  <input type="date" class="form-control" data-date="" data-date-format="DD MMMM YYYY" id="from_date" name='from_date' />
+                </div>
+
+                <label for="date" class="col-md-0 col-form-label">To Date :</label>
+                <div class="col-md-2">
+                  <input type="date" class="form-control" id="to_date" name='to_date' />
+                </div>
+				<div class="col-md-2">
+				<button class="btn btn-primary" id='get_sleep_data'>Get Sleep Data</button>
+                </div>
+                <button hidden class="btn btn-secondary" id='export_sleep_data'>Export Excel</button>
+              
+              </div>
+
+            
+                <table >
+                    <thead>
+                    <tr id='heading'>
+                      <th >DATE</th>
+                      <th style="padding-left:10px;">START TIME</th>
+                      <th style="padding-left:10px;">END TIME</th>
+                      <th style="padding-left:10px;">Minutes Asleep</th>
+                      <th style="padding-left:10px;">Minutes Awake</th>
+                      <th style="padding-left:10px;">Number of Awakenings</th>
+                      <th style="padding-left:10px;">Time in Bed</th>
+                      <th style="padding-left:10px;">Minutes REM Sleep</th>
+                      <th style="padding-left:10px;">Minutes Light Sleep</th>
+                      <th style="padding-left:10px;">Minutes Deep Sleep</th>
+                    </tr>
+                </thead>
+                  <tbody id='sleepDataTable'>
+
+                  </tbody>
+
+                  </table>
+        </div>
+        
+    </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        // 👇️ this runs Profile Data
+        $("#heading").hide();
+        //submitform();
+        function submitform(){   
+		$.ajax({
+      		type : 'POST',
+      		url :  "{% url 'profiledashboard' %}",
+      		data : {csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+      		success : function(response){
+			console.log(response.profileResult.user)
+            image = response.profileResult.user.avatar150
+            console.log('image=====>',image)
+            $("#add_image").attr("src", image);
+            $("#add_image").attr("width", 120);
+            $("#add_image").attr("height", 135);
+			$('p span#add_name').append(response.profileResult.user.fullName);
+			$('p span#add_age').append(response.profileResult.user.age);
+			$('p span#add_dob').append(response.profileResult.user.dateOfBirth);
+      		},
+      		error : function(response){
+      			console.log(response)
+      		}
+      	});	
+    } 
+
+    // 👇️ this runs Sleep Data
+	$('#get_sleep_data').click(function(){
+	    var fdate = $('#from_date').val();
+	    var tdate = $('#to_date').val();
+        
+        if (fdate.toString().length == 0) {
+            alert("please select From Date");
+            return false;
+        }
+        if (tdate.toString().length == 0) {
+            alert("please select To Date");
+            return false;
+        }
+	    $.ajax({
+      		type : 'POST',
+      		url :  "{% url 'getsleepdata' %}",
+      		data : {fdate : $('#from_date').val(),tdate : $('#to_date').val(),csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+      		success : function(response){debugger
+			//console.log(response);
+            $("#heading").show();
+            const person = undefined;
+            $('#sleepDataTable ').empty();
+			var i=0;
+			$.each(response, function(){
+			for ( var data in response.getsleepdataresult.sleep){
+
+                if (response.getsleepdataresult.sleep[data].levels.summary?.rem){
+                    var minutes= response.getsleepdataresult.sleep[data].levels.summary.rem.minutes;                   
+                  } else {
+                    var minutes='N/A';
+                  }
+                  if (response.getsleepdataresult.sleep[data].levels.summary?.light){
+                    var lightminutes= response.getsleepdataresult.sleep[data].levels.summary.light.minutes;                   
+                  } else {
+                    var lightminutes='N/A';
+                  }
+                  if (response.getsleepdataresult.sleep[data].levels.summary?.deep){
+                    var deepminutes= response.getsleepdataresult.sleep[data].levels.summary.deep.minutes;                   
+                  } else {
+                    var deepminutes='N/A';
+                  }
+
+                  var start_date = moment(response.getsleepdataresult.sleep[data].startTime).format('DD-MM-YYYY HH:mm a'); 
+                  var end_date = moment(response.getsleepdataresult.sleep[data].endTime).format('DD-MM-YYYY HH:mm a'); 
+
+
+                var html = "<tr id='datanow'><td>" + response.getsleepdataresult.sleep[data].dateOfSleep + 
+                    "</td><td>" + start_date+
+                         "</td><td>" + end_date+
+                              "</td><td>" + response.getsleepdataresult.sleep[data].minutesAsleep+
+                                   "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+
+                                        "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+
+                                             "</td><td>" + response.getsleepdataresult.sleep[data].timeInBed+
+                                                  "</td><td>" + minutes+ "</td><td>" + lightminutes+ "</td><td>"
+                                                       + deepminutes+ "</td></tr>";
+
+             
+			$('#sleepDataTable').append(html);
+			}
+			});
+      		},
+      		error : function(response){
+      			console.log(response)
+      		}
+      	});	
+	})
+
+
+    $('#export_sleep_data').click(function(){
+	    var fdate = $('#from_date').val();
+	    var tdate = $('#to_date').val();
+
+        if (fdate.toString().length == 0) {
+            alert("please select From Date");
+            return false;
+        }
+        if (tdate.toString().length == 0) {
+            alert("please select To Date");
+            return false;
+        }
+	    $.ajax({
+      		type : 'POST',
+      		url :  "{% url 'getsleepdata' %}",
+      		data : {fdate : $('#from_date').val(),tdate : $('#to_date').val(),csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+      		success : function(response){debugger
+			//console.log(response);
+
+			var i=0;
+			$.each(response, function(){
+			for ( var data in response.getsleepdataresult.sleep){
+
+                if (response.getsleepdataresult.sleep[data].levels.summary?.rem){
+                    console.log(response.getsleepdataresult.sleep[data].levels.summary.rem.minutes);
+                    var minutes= response.getsleepdataresult.sleep[data].levels.summary.rem.minutes;                   
+                  } else {
+                    var minutes='N/A';
+                  }
+                  if (response.getsleepdataresult.sleep[data].levels.summary?.light){
+                    console.log(response.getsleepdataresult.sleep[data].levels.summary.light.minutes);
+                    var lightminutes= response.getsleepdataresult.sleep[data].levels.summary.light.minutes;                   
+                  } else {
+                    var lightminutes='N/A';
+                  }
+                  if (response.getsleepdataresult.sleep[data].levels.summary?.deep){
+                    console.log(response.getsleepdataresult.sleep[data].levels.summary.deep.minutes);
+                    var deepminutes= response.getsleepdataresult.sleep[data].levels.summary.deep.minutes;                   
+                  } else {
+                    var deepminutes='N/A';
+                  }
+                var html = "<tr><td>" + response.getsleepdataresult.sleep[data].dateOfSleep + "</td><td>" + response.getsleepdataresult.sleep[data].startTime+ "</td><td>" + response.getsleepdataresult.sleep[data].endTime+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAsleep+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+ "</td><td>" + response.getsleepdataresult.sleep[data].timeInBed+ "</td><td>" + minutes+ "</td><td>" + lightminutes+ "</td><td>" + deepminutes+ "</td></tr>";
+			$('#sleepDataTable').append(html);
+			}
+			});
+      		},
+      		error : function(response){
+      			console.log(response)
+      		}
+      	});	
+	})
+    </script>
+
+</html>
