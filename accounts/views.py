@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 
 # os.environ['acces_token'] = ''
 # os.environ['userId'] = ''
-connection = pymysql.connect(host='127.0.0.1',database='fitbitdb',user='root',password='root')
+connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
 
 
 def indexView(request):
@@ -47,7 +47,7 @@ def redirectView(request):
      request.session['acces_token']=request.session['acces_token']
      access_token=request.session['acces_token']
      reg_date_time = datetime.datetime.now()        
-     connection = pymysql.connect(host='127.0.0.1',database='fitbitdb',user='root',password='root')
+     connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
      with connection.cursor() as cursor:
          cursor.execute("select user_id from profile_token where user_id=%s", (str(request.session['userId']),))
          row = cursor.fetchone()
@@ -89,7 +89,7 @@ def profiledashboard(request):
     access_token=request.GET['aacc']
     reg_date_time = datetime.datetime.now()
 
-    connection = pymysql.connect(host='127.0.0.1',database='fitbitdb',user='root',password='root')
+    connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
     with connection.cursor() as cursor:
         cursor.execute("select user_id from profile_token where user_id=%s", (str(request.GET['user_id']),))
         row = cursor.fetchone()
@@ -140,7 +140,7 @@ def getsleepdata(request):
         # minutes_light_sleep = response['sleep']['summary']['light']
         # minutes_deep_sleep = response['sleep']['summary']['deep']
 
-        # connection = pymysql.connect(host='127.0.0.1',database='fitbitdb',user='root',password='root')
+        # connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
         # with connection.cursor() as cursor:
         #     sql = "INSERT INTO sleep_data VALUES ('"+str(sleep_date)+"','"+str(start_time)+"','"+str(end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"','"+str(minutes_awake)+"')"
         #     cursor.execute(sql)
@@ -157,7 +157,7 @@ def getsleepdata(request):
 
 
 def registeredUsersView(request):
-    connection = pymysql.connect(host='127.0.0.1',database='fitbitdb',user='root',password='root')
+    connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM profile_token")
         usersRows = cursor.fetchall()
