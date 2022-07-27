@@ -25,8 +25,10 @@
             <header>
                 <h5 class="head text-white text-center p-3">Welcome</h5>
             </header>
-
-            <input class="center" type="button" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate&expires_in=31536000';" value="Connect Fitbit" />
+            <!-- live -->
+            <input class="center" type="button" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=https%3A%2F%2F43.205.35.220%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';" value="Connect Fitbit" />
+            <!-- local -->
+            {% comment %} <input class="center" type="button" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238GRZ&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';" value="Connect Fitbit" /> {% endcomment %}
 
             <!-- navbar -->
         </div>

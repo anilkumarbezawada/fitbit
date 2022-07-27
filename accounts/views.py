@@ -10,15 +10,21 @@ from django.contrib.auth.decorators import login_required
 from numpy import var
 import pymysql
 import requests
-from werkzeug import Response
 from django.template.loader import render_to_string
-import xlwt
 from django.contrib.auth.models import User
-# Create your views here.
 
-# os.environ['acces_token'] = ''
-# os.environ['userId'] = ''
-connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
+import sys
+sys.path.append( "/path/to/mysite" )
+from mysite import settings
+
+dbName     = settings.DATABASES['default']['NAME']
+dbUsername = settings.DATABASES['default']['USER']
+dbPassword = settings.DATABASES['default']['PASSWORD']
+dbHost     = settings.DATABASES['default']['HOST']
+
+def dbconnection():
+    connection = pymysql.connect(host=dbHost,database=dbName,user=dbUsername,password=dbPassword)
+    return connection
 
 
 def indexView(request):
@@ -47,7 +53,7 @@ def redirectView(request):
      request.session['acces_token']=request.session['acces_token']
      access_token=request.session['acces_token']
      reg_date_time = datetime.datetime.now()        
-     connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
+     connection = dbconnection()
      with connection.cursor() as cursor:
          cursor.execute("select user_id from profile_token where user_id=%s", (str(request.session['userId']),))
          row = cursor.fetchone()
@@ -85,11 +91,12 @@ def profiledashboard(request):
     name = response['user']['fullName']
     age = response['user']['age']
     user_id = response['user']['encodedId']
+    request.session['userId']=user_id
     request.session['acces_token']=request.GET['aacc']
     access_token=request.GET['aacc']
     reg_date_time = datetime.datetime.now()
 
-    connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
+    connection = dbconnection()
     with connection.cursor() as cursor:
         cursor.execute("select user_id from profile_token where user_id=%s", (str(request.GET['user_id']),))
         row = cursor.fetchone()
@@ -112,6 +119,7 @@ def profiledashboard(request):
         
 def getsleepdata(request):
     print('getsleepdata===>',request.session['acces_token'])
+    print('getsleepdata USERID===>',request.session['userId'])
     if request.session['acces_token'] :
 
         url = "https://api.fitbit.com/1.2/user/-/sleep/date/"+request.POST['fdate']+"/"+request.POST['tdate']+".json"
@@ -124,32 +132,45 @@ def getsleepdata(request):
         response = requests.get(url,headers=header).json()
         print("Sleep Data")
         print("url===>",url)
-        print('Sleep Data result===>',response)
+        print('Sleep Data===>',response)
+        if response['sleep']:
+            for i in response['sleep']:
+                sleep_date = i['dateOfSleep']
+                start_time = i['startTime']
+                # startTime = i['startTime']
+                # start_time = datetime.datetime.strptime(startTime, '%Y-%m-%d').strftime('DD-MM-YYYY HH:mm     a')
+                end_time = i['endTime']
+                minutes_asleep = i['minutesAsleep']
+                minutes_awake = i['minutesAwake']
+                no_of_awakenings = i['minutesAwake']
+                time_in_bed = i['timeInBed']
+                abc = i['levels']['summary']
+                if 'rem' in abc.keys():
+                    minutes_rem = i['levels']['summary']['rem']['minutes']
+                else:
+                    minutes_rem = "N/A"
 
-        # numberOfDestinationNeeded = 4 # change this number according to your need
-        # for i in range(numberOfDestinationNeeded):     
-        #     print(response["sleep"])
+            if 'light' in abc.keys():
+                minutes_light_sleep = i['levels']['summary']['light']['minutes']
+            else:
+                minutes_light_sleep = "N/A"
 
-        # start_time = response['sleep']['startTime']
-        # end_time = response['sleep']['endTime']
-        # minutes_asleep = response['sleep']['minutesAsleep']
-        # minutes_awake = response['sleep']['minutesAwake']
-        # no_of_awakenings = response['sleep']['minutesAwake']
-        # time_in_bed = response['sleep']['timeInBed']
-        # minutes_rem = response['sleep']['summary']['rem']
-        # minutes_light_sleep = response['sleep']['summary']['light']
-        # minutes_deep_sleep = response['sleep']['summary']['deep']
+            if 'deep' in abc.keys():
+                minutes_deep_sleep = i['levels']['summary']['deep']['minutes']
+            else:
+                minutes_deep_sleep = "N/A"
+        
 
-        # connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
-        # with connection.cursor() as cursor:
-        #     sql = "INSERT INTO sleep_data VALUES ('"+str(sleep_date)+"','"+str(start_time)+"','"+str(end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"','"+str(minutes_awake)+"')"
-        #     cursor.execute(sql)
-        #     connection.commit()
-        #     cursor.close()
-        #     connection.close()
+            connection = dbconnection()
+            with connection.cursor() as cursor:
+               sql = "INSERT INTO sleep_data (user_id,sleep_date,start_time,end_time,minutes_asleep,minutes_awake,no_of_awakenings,time_in_bed,minutes_rem,minutes_light_sleep,minutes_deep_sleep) VALUES ('"+str(request.session['userId'])+"','"+str(sleep_date)+"','"+str(start_time)+"','"+str(end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"','"+str(no_of_awakenings)+"','"+str(time_in_bed)+"','"+str(minutes_rem)+"','"+str(minutes_light_sleep)+"','"+str(minutes_deep_sleep)+"')"
 
-
-
+               cursor.execute(sql)
+               connection.commit()
+               cursor.close()
+               connection.close()
+        else :
+            print('NO Sleep Data===>',response)
 
         return JsonResponse({"getsleepdataresult":response}, status = 200)
     else :
@@ -157,7 +178,7 @@ def getsleepdata(request):
 
 
 def registeredUsersView(request):
-    connection = pymysql.connect(host='ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',database='fitbitdb',user='dbmasteruser',password='PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE')
+    connection = dbconnection()
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM profile_token")
         usersRows = cursor.fetchall()
@@ -171,53 +192,3 @@ def registeredUsersView(request):
             print('users-row--------NO RECORDS FOUND')
     # return render(request,'registered_users.html')
     return render(request,'registered_users.html',{'usersListResonse':usersRows})
-
-
-def export_sleep_xls(request):
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="users.xls"'
-
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Users')
-
-    # Sheet header, first row
-    row_num = 0
-
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-
-    columns = ['DATE','START TIME','END TIME','Minutes Asleep','Minutes Awake','Number of Awakenings','Time in Bed','Minutes REM Sleep','Minutes Light Sleep','Minutes Deep Sleep']
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style)
-
-    # Sheet body, remaining rows
-    font_style = xlwt.XFStyle()
-
-    rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num], font_style)
-
-    wb.save(response)
-    return response
-
-# def dashboardView_sleep(request):
-#     print('dashboardView_sleep===>',request.session['acces_token'])
-#     if request.session['acces_token'] :
-
-#         url = "https://api.fitbit.com/1.2/user/-/sleep/date/2022-07-10/2022-07-20.json"
-
-#         header = {
-#         "Content-Type":"application/json",
-#         "Authorization":"Bearer "+request.session['acces_token'],
-#         }
-
-#         response = requests.get(url,headers=header).json()
-#         print("Sleep Data")
-#         # print('Sleep Data result===>',response)
-#         #return render(request,'dashboard.html',{'sleepResult':response})
-#         return render(request,'dashboard.html')
-#     else :
-#         return render(request,'index.html')

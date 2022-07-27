@@ -80,12 +80,23 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fitbitDB',
-        'USER': 'dbmasteruser',  
-        'PASSWORD': 'PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE',  
-        'HOST': 'ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',  
+        'USER': 'root',  
+        'PASSWORD': 'root',  
+        'HOST': '127.0.0.1',  
         'PORT': '3306',  
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'fitbitDB',
+#         'USER': 'dbmasteruser',  
+#         'PASSWORD': 'PuA<#-i?uf|tJ3u`kT~XrLAR*FUn2kpE',  
+#         'HOST': 'ls-77c7e05b4574ff02a4834ae4adfcf619696ab334.cpozemxa631v.ap-south-1.rds.amazonaws.com',  
+#         'PORT': '3306',  
+#     }
+# }
 
 
 # Password validation
