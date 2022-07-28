@@ -12,6 +12,7 @@ import pymysql
 import requests
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
+from dateutil.relativedelta import relativedelta
 
 import sys
 sys.path.append( "/path/to/mysite" )
@@ -133,44 +134,6 @@ def getsleepdata(request):
         print("Sleep Data")
         print("url===>",url)
         print('Sleep Data===>',response)
-        if response['sleep']:
-            for i in response['sleep']:
-                sleep_date = i['dateOfSleep']
-                start_time = i['startTime']
-                # startTime = i['startTime']
-                # start_time = datetime.datetime.strptime(startTime, '%Y-%m-%d').strftime('DD-MM-YYYY HH:mm     a')
-                end_time = i['endTime']
-                minutes_asleep = i['minutesAsleep']
-                minutes_awake = i['minutesAwake']
-                no_of_awakenings = i['minutesAwake']
-                time_in_bed = i['timeInBed']
-                abc = i['levels']['summary']
-                if 'rem' in abc.keys():
-                    minutes_rem = i['levels']['summary']['rem']['minutes']
-                else:
-                    minutes_rem = "N/A"
-
-            if 'light' in abc.keys():
-                minutes_light_sleep = i['levels']['summary']['light']['minutes']
-            else:
-                minutes_light_sleep = "N/A"
-
-            if 'deep' in abc.keys():
-                minutes_deep_sleep = i['levels']['summary']['deep']['minutes']
-            else:
-                minutes_deep_sleep = "N/A"
-        
-
-            connection = dbconnection()
-            with connection.cursor() as cursor:
-               sql = "INSERT INTO sleep_data (user_id,sleep_date,start_time,end_time,minutes_asleep,minutes_awake,no_of_awakenings,time_in_bed,minutes_rem,minutes_light_sleep,minutes_deep_sleep) VALUES ('"+str(request.session['userId'])+"','"+str(sleep_date)+"','"+str(start_time)+"','"+str(end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"','"+str(no_of_awakenings)+"','"+str(time_in_bed)+"','"+str(minutes_rem)+"','"+str(minutes_light_sleep)+"','"+str(minutes_deep_sleep)+"')"
-
-               cursor.execute(sql)
-               connection.commit()
-               cursor.close()
-               connection.close()
-        else :
-            print('NO Sleep Data===>',response)
 
         return JsonResponse({"getsleepdataresult":response}, status = 200)
     else :
@@ -192,3 +155,80 @@ def registeredUsersView(request):
             print('users-row--------NO RECORDS FOUND')
     # return render(request,'registered_users.html')
     return render(request,'registered_users.html',{'usersListResonse':usersRows})
+
+
+def getTotalSleepData(request):
+
+    from_date = datetime.date.today() - relativedelta(months=1)
+    to_date = datetime.datetime.now().strftime ("%Y-%m-%d")
+    print('#####from_date&&&to_date#####',from_date,to_date)
+
+    print('getsleepdata===>',request.session['acces_token'])
+    print('getsleepdata USERID===>',request.session['userId'])
+    if request.session['acces_token'] :
+
+        url = "https://api.fitbit.com/1.2/user/-/sleep/date/"+from_date+"/"+to_date+".json"
+
+        header = {
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+request.session['acces_token'],
+        }
+
+        response = requests.get(url,headers=header).json()
+        print("Sleep Data")
+        print("url===>",url)
+        print('Sleep Data===>',response)
+        if response['sleep']:
+
+            connection = dbconnection()
+            with connection.cursor() as cursor:
+                cursor.execute("select user_id from sleep_data where user_id=%s", (str(request.session['userId']),))
+                row = cursor.fetchall()
+                print('row--------',row)
+
+
+
+
+
+
+            for i in response['sleep']:
+                sleep_date = i['dateOfSleep']
+                start_time = i['startTime']
+                # startTime = i['startTime']
+                # start_time = datetime.datetime.strptime(startTime, '%Y-%m-%d').strftime('DD-MM-YYYY HH:mm     a')
+                end_time = i['endTime']
+                minutes_asleep = i['minutesAsleep']
+                minutes_awake = i['minutesAwake']
+                no_of_awakenings = i['minutesAwake']
+                time_in_bed = i['timeInBed']
+                abc = i['levels']['summary']
+                if 'rem' in abc.keys():
+                    minutes_rem = i['levels']['summary']['rem']['minutes']
+                else:
+                    minutes_rem = "N/A"
+
+                if 'light' in abc.keys():
+                    minutes_light_sleep = i['levels']['summary']['light']['minutes']
+                else:
+                    minutes_light_sleep = "N/A"
+    
+                if 'deep' in abc.keys():
+                    minutes_deep_sleep = i['levels']['summary']['deep']['minutes']
+                else:
+                    minutes_deep_sleep = "N/A"
+            
+    
+                connection = dbconnection()
+                with connection.cursor() as cursor:
+                   sql = "INSERT INTO sleep_data (user_id,sleep_date,start_time,end_time,minutes_asleep,    minutes_awake,no_of_awakenings,time_in_bed,minutes_rem,minutes_light_sleep, minutes_deep_sleep) VALUES ('"+str(request.session['userId'])+"','"+str(sleep_date)+"','"    +str(start_time)+"','"+str(end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"', '"+str(no_of_awakenings)+"','"+str(time_in_bed)+"','"+str(minutes_rem)+"','"+str (minutes_light_sleep)+"','"+str(minutes_deep_sleep)+"')"
+    
+                   cursor.execute(sql)
+                   connection.commit()
+                   cursor.close()
+                   connection.close()
+        else :
+            print('NO Sleep Data===>',response)
+
+        return JsonResponse({"getsleepdataresult":response}, status = 200)
+    else :
+       return JsonResponse({"getsleepdataresult":response}, status = 400)
