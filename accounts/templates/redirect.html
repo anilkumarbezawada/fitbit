@@ -20,6 +20,20 @@
         <title>FITBIT REDIRECT</title>
     </head>
 
+
+    <body onload="fetch_access_token()">
+        <div class="container-fluid">
+            <!-- head title -->
+            <header>
+                <h5 class="head text-white text-center p-3">FITBIT ACCESS TOKEN</h5>
+            </header>
+            {% comment %} <span id="access1">text</span> {% endcomment %}
+
+            <input type="button" onclick="location.href=/dashboard/" value="Get Data" />
+
+        </div>
+    </body>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         function fetch_access_token() {
@@ -58,22 +72,6 @@
         {% comment %} HtmlPage.Window.Invoke("addToCart3"); {% endcomment %}
     
     </script>
-
-
-    
-
-    <body onload="fetch_access_token()">
-        <div class="container-fluid">
-            <!-- head title -->
-            <header>
-                <h5 class="head text-white text-center p-3">FITBIT ACCESS TOKEN</h5>
-            </header>
-            {% comment %} <span id="access1">text</span> {% endcomment %}
-
-            <input type="button" onclick="location.href=/dashboard/" value="Get Data" />
-
-        </div>
-    </body>
 
 </html>
 

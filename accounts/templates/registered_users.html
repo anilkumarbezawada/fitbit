@@ -62,7 +62,11 @@
                 <button style="float: right;" onclick="copyToClipboard('#p1')" class="btn"><i class="fa fa-clipboard"></i> Share Link</button>
                 {% comment %} <p hidden id="p1">https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate&expires_in=31536000</p> {% endcomment %}
                 
-                <p hidden id="p1">http://13.234.239.15/access/</p>
+                {% comment %} <p hidden id="p1">http://127.0.0.1:8000/access/</p> {% endcomment %}
+                <p hidden id="p1">https://svasana.com/access/</p>
+
+                <button class="btn btn-primary" id='export_sleep_data'><i class="fa fa-download"></i>Export Sleep Data</button>
+
             </header>
 
             <table class="center">
@@ -80,9 +84,7 @@
                   <td ><a  href="{% url 'profiledashboard' %}?user_id={{i.1}}&aacc={{i.2}}"> View Details</a></td>
                 </tr>
 
-                
                 {% endfor %}
-                
 
               </table>
 
@@ -98,6 +100,63 @@
             document.execCommand("copy");
             $temp.remove();
           }
+
+          function ConvertToCSV(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+          
+            for (var i = 0; i < array.length; i++) {
+              var line = '';
+              for (var index in array[i]) {
+                if (line != '') line += ','
+          
+                line += array[i][index];
+              }
+              str += line + '\r\n';
+            }
+            return str;
+          }
+
+      
+              // 👇️ this runs Export Sleep Data
+	  $('#export_sleep_data').click(function(){
+
+      $.ajax({
+        type : 'POST',
+        url :  "{% url 'exportsleepdata' %}",
+        data : {csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
+        success : function(response){
+        {% comment %} console.log(response); {% endcomment %}
+
+        var items = response.getsleepdataresult
+
+        var heading = ['User Id', 'Sleep Date', 'Start Time', 'End Time','Minutes Asleep','Minutes Awake', 'Number of Awakenings', 'Time in Bed', 'Minutes Deep Sleep', 'Minutes Rem', 'Minutes Light Sleep'];
+
+        items.unshift(heading);
+
+        // Convert Object to JSON
+        var jsonObject = JSON.stringify(items);
+
+        // Display JSON
+        $('#json').text(jsonObject);
+
+        {% comment %} $.each(jsonObject, function(k, v) {
+          console.log(k + '------'+ v);
+        }); {% endcomment %}
+
+        //Convert JSON to CSV & Display CSV
+        $('#csv').text(ConvertToCSV(jsonObject));
+
+        var csv = ConvertToCSV(jsonObject);
+        window.open("data:text/csv;charset=utf-8," + escape(csv))
+
+
+        },
+        error : function(response){
+          console.log(response)
+        }
+      });	
+})
     
     </script>
 

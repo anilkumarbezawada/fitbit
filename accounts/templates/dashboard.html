@@ -9,13 +9,16 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
         <script src="{% static 'js/jquery.min.js' %}"></script>
         <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
         <script src="{% static 'js/popper-1.14.7.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+     
         <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
+
     
         <title>FITBIT DASHBOARD</title>
         <style>
@@ -37,7 +40,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        function fetch_access_token() {
+        function fetch_access_token() {debugger;
             var url = window.location.href;
             //getting the access token from url 
             var access_token = url.split("#")[1].split("=")[1].split("&")[0]; 
@@ -112,7 +115,6 @@
 				<div class="col-md-2">
 				<button class="btn btn-primary" id='get_sleep_data'>Get Sleep Data</button>
                 </div>
-                <button hidden class="btn btn-secondary" id='export_sleep_data'>Export Excel</button>
               
               </div>
 
@@ -142,10 +144,12 @@
     </body>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 
     <script>
         // 👇️ this runs Profile Data
         $("#heading").hide();
+        //$('#sleepDataTable').DataTable();
         //submitform();
         function submitform(){   
 		$.ajax({
@@ -186,19 +190,26 @@
       		type : 'POST',
       		url :  "{% url 'getsleepdata' %}",
       		data : {fdate : $('#from_date').val(),tdate : $('#to_date').val(),csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
-      		success : function(response){debugger
+      		success : function(response){
 			//console.log(response);
             $("#heading").show();
             const person = undefined;
-            $('#sleepDataTable ').empty();
+            $('#sleepDataTable').empty();
 			var i=0;
 			$.each(response, function(){
 			for ( var data in response.getsleepdataresult.sleep){
 
+                if (response.getsleepdataresult.sleep[data].levels.summary?.awake){
+                  var noAwakenings= response.getsleepdataresult.sleep[data].levels.summary.awake.count;                   
+                } else if(response.getsleepdataresult.sleep[data].levels.summary?.wake){
+                  var noAwakenings= response.getsleepdataresult.sleep[data].levels.summary.wake.count;
+                } else {
+                  var noAwakenings='N/A';
+                }
                 if (response.getsleepdataresult.sleep[data].levels.summary?.rem){
-                    var minutes= response.getsleepdataresult.sleep[data].levels.summary.rem.minutes;                   
+                    var remMinutes= response.getsleepdataresult.sleep[data].levels.summary.rem.minutes;                   
                   } else {
-                    var minutes='N/A';
+                    var remMinutes='N/A';
                   }
                   if (response.getsleepdataresult.sleep[data].levels.summary?.light){
                     var lightminutes= response.getsleepdataresult.sleep[data].levels.summary.light.minutes;                   
@@ -220,9 +231,9 @@
                          "</td><td>" + end_date+
                               "</td><td>" + response.getsleepdataresult.sleep[data].minutesAsleep+
                                    "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+
-                                        "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+
+                                        "</td><td>" +noAwakenings+
                                              "</td><td>" + response.getsleepdataresult.sleep[data].timeInBed+
-                                                  "</td><td>" + minutes+ "</td><td>" + lightminutes+ "</td><td>"
+                                                  "</td><td>" + remMinutes+ "</td><td>" + lightminutes+ "</td><td>"
                                                        + deepminutes+ "</td></tr>";
 
              
@@ -236,58 +247,6 @@
       	});	
 	})
 
-
-    $('#export_sleep_data').click(function(){
-	    var fdate = $('#from_date').val();
-	    var tdate = $('#to_date').val();
-
-        if (fdate.toString().length == 0) {
-            alert("please select From Date");
-            return false;
-        }
-        if (tdate.toString().length == 0) {
-            alert("please select To Date");
-            return false;
-        }
-	    $.ajax({
-      		type : 'POST',
-      		url :  "{% url 'getsleepdata' %}",
-      		data : {fdate : $('#from_date').val(),tdate : $('#to_date').val(),csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
-      		success : function(response){debugger
-			//console.log(response);
-
-			var i=0;
-			$.each(response, function(){
-			for ( var data in response.getsleepdataresult.sleep){
-
-                if (response.getsleepdataresult.sleep[data].levels.summary?.rem){
-                    console.log(response.getsleepdataresult.sleep[data].levels.summary.rem.minutes);
-                    var minutes= response.getsleepdataresult.sleep[data].levels.summary.rem.minutes;                   
-                  } else {
-                    var minutes='N/A';
-                  }
-                  if (response.getsleepdataresult.sleep[data].levels.summary?.light){
-                    console.log(response.getsleepdataresult.sleep[data].levels.summary.light.minutes);
-                    var lightminutes= response.getsleepdataresult.sleep[data].levels.summary.light.minutes;                   
-                  } else {
-                    var lightminutes='N/A';
-                  }
-                  if (response.getsleepdataresult.sleep[data].levels.summary?.deep){
-                    console.log(response.getsleepdataresult.sleep[data].levels.summary.deep.minutes);
-                    var deepminutes= response.getsleepdataresult.sleep[data].levels.summary.deep.minutes;                   
-                  } else {
-                    var deepminutes='N/A';
-                  }
-                var html = "<tr><td>" + response.getsleepdataresult.sleep[data].dateOfSleep + "</td><td>" + response.getsleepdataresult.sleep[data].startTime+ "</td><td>" + response.getsleepdataresult.sleep[data].endTime+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAsleep+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+ "</td><td>" + response.getsleepdataresult.sleep[data].minutesAwake+ "</td><td>" + response.getsleepdataresult.sleep[data].timeInBed+ "</td><td>" + minutes+ "</td><td>" + lightminutes+ "</td><td>" + deepminutes+ "</td></tr>";
-			$('#sleepDataTable').append(html);
-			}
-			});
-      		},
-      		error : function(response){
-      			console.log(response)
-      		}
-      	});	
-	})
     </script>
 
 </html>
