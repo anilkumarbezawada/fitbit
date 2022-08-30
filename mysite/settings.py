@@ -92,10 +92,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fitbitDB',
-        'USER': 'admin',  
-        'PASSWORD': 'Pa$$word#135',  
-        'HOST': 'tgtmysql.c43ggpxb82mq.ap-south-1.rds.amazonaws.com',  
+        'NAME': 'Fitbit-Stage',
+        'USER': 'fitbit',  
+        'PASSWORD': 'jIn4V0s*$Yex98Dvbw<[5QFD)d{EzK:,',  
+        'HOST': 'ls-a20bcd1acdbf9d523fb61cf7882a9f54f2b97672.cd0ruiv03hht.ap-south-1.rds.amazonaws.com',  
         'PORT': '3306',  
     }
 }

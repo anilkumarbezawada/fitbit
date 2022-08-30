@@ -23,9 +23,8 @@
 
         <style>
             h1 {
-                text-align: center;
+                align: center;
               }
-              
             input[type=submit] {
                 background-color: #4CAF50;
                 color: white;
@@ -33,6 +32,8 @@
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
+                height:50px;
+
             }
             
             input[type=submit]:hover {
@@ -51,6 +52,11 @@
               margin-top: -10px;
               font-size: 12px;
               color: red;
+              margin-top:2px;
+            }
+
+            .div-input {
+                min-height: 55px;
             }
         </style>
 
@@ -64,49 +70,74 @@
                {{ message }}
         </div>
         {% endfor %}
-        
-        <div class="login-reg-panel">
-            <div class="login-info-box">
-                <img src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
-                       class="rounded img-fluid" width="100" height="100">
-                <h4>Have an account?</h4>
-                <p></p>
-                <label id="label-register" for="log-reg-show">Login</label>
-                <input type="radio" name="active-log-panel" id="log-reg-show"  checked="checked">
-            </div>
-                                
-            <div class="register-info-box">
-                <img src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
-                       class="rounded img-fluid" width="100" height="100">
-                <h4>Don't have an account?</h4>
-                <p></p>
-                <label id="label-login" for="log-login-show">Register</label>
-                <input type="radio" name="active-log-panel" id="log-login-show">
-            </div>
-                                
-            <div class="white-panel">
-                <div class="login-show">
-                    <h2>LOGIN</h2>
-                    <form action="/" id = "login_validation"method = "POST"  >{% csrf_token %}
-                        <input type="text" placeholder="Email" id="email" name="email" required>
-                        <input type="password" placeholder="Password" id="password" name="password" required>
-                        <input type="submit" value="Login">
-                        <a hidden href="users/">Forgot password?</a>
-                    </form>
-                </div>
 
-                <div class="register-show">
-                    <h2>REGISTER</h2>
-                    <form action="registrationView/" id = "reg_validation" method = "POST" >{% csrf_token %} 
-                        <input type="text" placeholder="Name" id="reg_name" name="reg_name" >
-                        <input type="text" placeholder="Email" id="reg_email" name="reg_email" >
-                        <input type="password" placeholder="Password" id="reg_password" name="reg_password" >
-                        <input type="password" placeholder="Confirm Password" id="conf_password" name="conf_password">
-                        <input type="submit" value="Register">
-                    </form>
+        <div class="container register" style="height:548px";>
+            <div class="row ">
+                <div class="col-md-3 register-left">
+                    <img src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
+                       class="rounded img-fluid" width="200" height="200">
+                    <h3>NYDRA WELLNESS</h3>
+                    
+                </div>
+                <div class="col-md-9 register-right">
+                    <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Register</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <h3 class="register-heading">Login</h3>
+                            <div class="row login-form d-flex justify-content-center">
+                                <div class="col-md-6 mt-1" >
+
+                                    <form action="/" id = "login_validation" method = "POST">{% csrf_token %}
+                                      <div class="div-input">
+                                        <input type="email" class="form-control h1 mt-3" placeholder="Your Email *" id="email" name="email" />
+                                      </div>
+                                      <div class="div-input">
+                                        <input type="password" class="form-control h1 mt-3" placeholder="Password *" id="password" name="password" />
+                                      </div>
+                                        <input type="submit" class="btnRegister"  value="Login"/>
+                                        <a hidden href="users/">Forgot password?</a>
+                                </form>
+                                    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="tab-pane fade show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <h3  class="register-heading">Register Here</h3>
+                            <div class="row register-form d-flex justify-content-center">
+                                <div class="col-md-6">                                   
+                                     <form action="registrationView/" id = "reg_validation" method = "POST" >{% csrf_token %} 
+                                        <div class="form-group div-input">
+                                            <input type="text" class="form-control" placeholder="Name *" id="reg_name" name="reg_name" />
+                                        </div>
+                                        <div class="form-group div-input">
+                                            <input type="email" class="form-control" placeholder="Email *" id="reg_email" name="reg_email" />
+                                        </div>
+                                        <div class="form-group div-input">
+                                            <input type="password" class="form-control" placeholder="Password *" id="reg_password" name="reg_password"/>
+                                        </div>
+                                        <div class="form-group div-input">
+                                            <input type="password" class="form-control" placeholder="Confirm Password *" id="conf_password" name="conf_password" />
+                                        </div>
+                                        <input type="submit" class="btnRegister"  value="Register"/>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
+
     </body>
 
     <script>
@@ -211,6 +242,9 @@
                 'reg_password': {
                     required: "The password field is mandatory!"
                 }
+            },
+            errorPlacement: function(error, element) {
+                error.appendTo( element.parents('.div-input') );
             },
             submitHandler: function(form) {
                 form.submit();

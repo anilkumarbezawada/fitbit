@@ -1,136 +1,161 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
 
-        {% load static %}
-    
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Add icon library -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        <script src="{% static 'js/jquery.min.js' %}"></script>
-        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
-        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
-    
-        <title>FITBIT</title>
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+  <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-        <style>
-            table {
-              font-family: arial, sans-serif;
-              border-collapse: collapse;
-              width: 50%;
-            }
-            td, th {
-              border: 1px solid #dddddd;
-              text-align: center;
-              padding: 8px;
-            }
-            tr:nth-child(even) {
-              background-color: #D6EEEE;
-            }
-            .btn {
-              background-color: ForestGreen;
-              border: none;
-              color: white;
-              padding: 12px 30px;
-              cursor: pointer;
-              font-size: 20px;
-            }
-            
-            /* Darker background on mouse-over */
-            .btn:hover {
-              background-color: LimeGreen;
-            }
-            </style>
-    </head>
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/fav.jpg' %}">
 
-    <body>
-        <div class="container-fluid">
-            <!-- head title -->
-            <header>
-                <h5 class="head text-white text-center p-3">Registered Users</h5>
+  <title>Doctor Dashboard</title>
+  <style>
+    .btn {
+      border: 0px solid;
+      background-image: linear-gradient(to right, rgb(81, 162, 189), rgb(137, 211, 137));
+    }
 
-              
-                <button hidden style="float: right;" onclick="copyToClipboard('#p1')">Share Link</button>
-                <button style="float: right;" onclick="copyToClipboard('#p1')" class="btn"><i class="fa fa-clipboard"></i> Share Link</button>
-                {% comment %} <p hidden id="p1">https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate&expires_in=31536000</p> {% endcomment %}
-                
-                {% comment %} <p hidden id="p1">http://127.0.0.1:8000/access/</p> {% endcomment %}
-                <p hidden id="p1">https://svasana.com/access/</p>
+    .reed {
+      border: 0px solid;
+      background-image: linear-gradient(to right, rgb(202, 80, 98), rgb(226, 185, 108));
+    }
 
-                <button class="btn btn-primary" id='export_sleep_data'><i class="fa fa-download"></i>Export Sleep Data</button>
+    .text-success {
+      border: 0px solid;
+    }
+  </style>
+</head>
 
-            </header>
+<body>
+  {% for message in messages %}
+  <div class="alert alert-danger">
+    <a class="close" href="#" data-dismiss="alert">×</a>
+    {{ message }}
+  </div>
+  {% endfor %}
 
-            <table class="center">
-              <tr id='table_heading'>
-                  <th >NAME</th>
-                  <th >REGISTERED DATE</th>
-                  <th > </th>
-                  
-                </tr>
-                
-                {% for i in usersListResonse %}
-                <tr>
-                  <td>{{i.4}}</td>
-                  <td >{{i.3}}</td>
-                  <td ><a  href="{% url 'profiledashboard' %}?user_id={{i.1}}&aacc={{i.2}}"> View Details</a></td>
-                </tr>
 
-                {% endfor %}
-
-              </table>
-
-            <!-- navbar -->
-        </div>
-    </body>
-
-    <script>
-        function copyToClipboard(element) {
-            var $temp = $("<input>");
-            $("body").append($temp);
-            $temp.val($(element).text()).select();
-            document.execCommand("copy");
-            $temp.remove();
-          }
-
-          function ConvertToCSV(objArray) {
-            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
-            var str = '';
-          
-            for (var i = 0; i < array.length; i++) {
-              var line = '';
-              for (var index in array[i]) {
-                if (line != '') line += ','
-          
-                line += array[i][index];
-              }
-              str += line + '\r\n';
-            }
-            return str;
-          }
-
+  <nav class="navbar navbar-dark bg-dark p-2 box_shadow">
+    <div class="container-fluid p-0 me-3">
+      <div class="flex-row d-flex justify-content-center align-item-center">
+        <div class="div">
+          <a class="navbar-brand" href="#">
+            <img
+              src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
+              class="rounded img-fluid" width="70" height="70">
+          </a>
+        </div class="">
+        <div class="navbar-brand fs-3 mt-2">NYDRA WELL</div>
+      </div>
+      {% comment %} <a class="navbar-brand">Registered Users</a> {% endcomment %}
       
-              // 👇️ this runs Export Sleep Data
-	  $('#export_sleep_data').click(function(){
+      <form class="d-flex">
+        <button class="btn rounded-pill text-light me-4" type="button" id='export_sleep_data'>Export Sleep Data
+        </button>
 
-      $.ajax({
-        type : 'POST',
-        url :  "{% url 'exportsleepdata' %}",
-        data : {csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() },
-        success : function(response){
-        {% comment %} console.log(response); {% endcomment %}
+        <!-- <p hidden id="p1">http://127.0.0.1:8000/access/</p> -->
+        <p hidden id="p1">https://svasana.com/access/</p>
+
+        <button class="btn reed rounded-pill text-light me-4 px-3" type="button" onclick="copyToClipboard('#p1')"> Share
+          Link</button>
+
+        <div class="dropdown dropstart mt-1">
+          <a class="dropdown text-light" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+          </a>
+          <ul class="dropdown-menu mt-4" aria-labelledby="dropdownMenuLink">
+            <li><a class="dropdown-item bg-light" href="/">Logout</a></li>
+          </ul>
+        </div>
+
+
+      </form>
+    </div>
+  </nav>
+  </div>
+  <div class="container">
+    <div class="row d-flex justify-content-center mt-4">
+      <div class="col-lg-8">
+        <table class="table table-dark text-center myTable table-hover">
+          <thead class="text-primary ">
+            <th>NAME</th>
+            <th>REGISTERED DATE</th>
+            <th></th>
+          </thead>
+          <tbody>
+
+            {% for i in usersListResonse %}
+            <tr>
+              <td>{{i.4}}</td>
+              <td>{{i.3}}</td>
+              <td><a href="{% url 'profiledashboard' %}?user_id={{i.1}}&aacc={{i.2}}"><i class="fa fa-eye"
+                    aria-hidden="true"></i> View Details</a></td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+</body>
+
+<script>
+  function copyToClipboard(element) {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val($(element).text()).select();
+    document.execCommand("copy");
+    $temp.remove();
+  }
+
+  function ConvertToCSV(objArray) {
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    var str = '';
+
+    for (var i = 0; i < array.length; i++) {
+      var line = '';
+      for (var index in array[i]) {
+        if (line != '') line += ','
+
+        line += array[i][index];
+      }
+      str += line + '\r\n';
+    }
+    return str;
+  }
+
+
+  // 👇️ this runs Export Sleep Data
+  $('#export_sleep_data').click(function () {
+
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'exportsleepdata' %}",
+      data: { csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val() },
+      success: function (response) {
+        console.log(response);
 
         var items = response.getsleepdataresult
 
-        var heading = ['User Id', 'Sleep Date', 'Start Time', 'End Time','Minutes Asleep','Minutes Awake', 'Number of Awakenings', 'Time in Bed', 'Minutes Deep Sleep', 'Minutes Rem', 'Minutes Light Sleep'];
+        var heading = ['User Id', 'Sleep Date', 'Start Time', 'End Time', 'Minutes Asleep', 'Minutes Awake', 'Number of Awakenings', 'Time in Bed', 'Minutes Deep Sleep', 'Minutes Rem', 'Minutes Light Sleep'];
 
         items.unshift(heading);
 
@@ -140,8 +165,8 @@
         // Display JSON
         $('#json').text(jsonObject);
 
-        {% comment %} $.each(jsonObject, function(k, v) {
-          console.log(k + '------'+ v);
+        {% comment %} $.each(jsonObject, function (k, v) {
+          console.log(k + '------' + v);
         }); {% endcomment %}
 
         //Convert JSON to CSV & Display CSV
@@ -151,13 +176,17 @@
         window.open("data:text/csv;charset=utf-8," + escape(csv))
 
 
-        },
-        error : function(response){
-          console.log(response)
-        }
-      });	
-})
-    
-    </script>
+      },
+      error: function (response) {
+        console.log(response)
+      }
+    });
+  })
+
+  $(".alert-danger").fadeTo(1500, 500).slideUp(500, function () {
+    $(".alert-danger").slideUp(500);
+  });
+
+</script>
 
 </html>

@@ -1,3 +1,43 @@
+@font-face {
+  font-family: "Satoshi-Bold";
+  src: url("../src/assets/fonts/Satoshi-Bold.woff2") format("woff2"),
+    url("../src/assets/fonts/Satoshi-Bold.woff") format("woff"),
+    url("../src/assets/fonts/Satoshi-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Lato-Regular";
+  src: url('698242188-Lato-Bla.eot');
+  src: url('698242188-Lato-Bla.eot?#iefix') format('embedded-opentype'),
+  url('698242188-Lato-Bla.svg#Lato Black') format('svg'),
+  url('698242188-Lato-Bla.woff') format('woff'),
+  url('698242188-Lato-Bla.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ========Profile Dashboard======== */
+
+.btn-get-sleep-data {
+  border: 0px solid;
+  background-image: linear-gradient(to right, rgb(81, 162, 189), rgb(137, 211, 137));
+}
+.btn-export {
+  border: 0px solid;
+  background-image: linear-gradient(to right, rgb(202, 80, 98), rgb(226, 185, 108));
+}
+
+/* ========Application Body */
+
+body {
+  background-color: #232D38 !important;
+}
+
+
+
 /* index */
 .head {
   background-color: #3333ff;
@@ -6,7 +46,7 @@
 
 .navbar {
   background: white;
-  height: 96px;
+  height: 90px;
 }
 
 .nav-link {
@@ -19,13 +59,8 @@
 .nav-item a:hover {
   color: #FF0000;
 }
-
-.dropdown-menu {
-  border: 0px;
-}
-
-.dropdown:hover>.dropdown-menu {
-  display: block;
+button{
+  width: 11rem !important;
 }
 
 .carousel-item {
@@ -159,8 +194,6 @@
   margin-left: 215px;
 }
 
-
-
 .donor_details {
   width: 550px;
   padding: 20px;
@@ -192,11 +225,13 @@
   padding: 10px;
   }
 
+  /* =======login page CSS========*/
+
   @import url('https://fonts.googleapis.com/css?family=Mukta');
   body{
     font-family: 'Mukta', sans-serif;
-    height:100vh;
-    min-height:550px;
+    /* height:100vh;
+    min-height:550px; */
     background-repeat: no-repeat;
     background-size:cover;
     background-position:center;
@@ -216,7 +251,9 @@
     right:0;left:0;
       margin:auto;
       height:400px;
-      background-color: rgba(236, 48, 20, 0.9);
+      background-color: #344150;
+      border-radius:10px ;
+
   }
   .white-panel{
       background-color: rgba(255,255, 255, 1);
@@ -234,11 +271,11 @@
       display:none;
   }
   .login-reg-panel{
-      color:#B8B8B8;
+      color:#f9f9f9;
   }
   .login-reg-panel #label-login, 
   .login-reg-panel #label-register{
-      border:1px solid #9E9E9E;
+      border:1px solid #fcfcfc;
       padding:5px 5px;
       width:150px;
       display:block;
@@ -262,7 +299,7 @@
       top:20%;
       right:0;
       position:absolute;
-      text-align:left;
+      text-align:center;
       
   }
   .right-log{right:50px !important;}
@@ -309,10 +346,15 @@
   .register-show input[type="text"], .register-show input[type="password"]{
       width: 100%;
       display: block;
-      margin:20px 0;
-      padding: 15px;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      padding: 12px;
       border: 1px solid #b5b5b5;
       outline: none;
+      resize: vertical;
+      border-radius: 4px;
+      box-sizing: border-box;
+
   }
   .register-show input[type="button"] {
       max-width: 150px;
@@ -344,3 +386,170 @@
     text-decoration:none;
     color:#2c7715;
   }
+
+/* ======== Doctors Dashboard Page ======== */
+
+
+.btn {
+  border: 0px solid;
+  background-image: linear-gradient(to right, rgb(81, 162, 189), rgb(137, 211, 137));
+}
+
+.reed {
+  border: 0px solid;
+  background-image: linear-gradient(to right, rgb(202, 80, 98), rgb(226, 185, 108));
+}
+
+.text-success {
+  border: 0px solid;
+}
+
+.box_shadow {
+  box-shadow: rgba(0, 0, 0, 0) 0px 2px 10px;
+  background-color: #202933 !important;
+}
+table,thead,th,td {
+  padding: 1rem !important;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.table>:not(caption)>*>* {
+  background-color: #202a34 !important;
+  border-bottom-width: 0px !important;
+  box-shadow: none;
+  padding:0.8rem !important;
+}
+
+.table-hover>tbody>tr:hover {
+  --bs-table-accent-bg: var(--bs-table-hover-bg);
+  color: var(--bs-table-hover-color);
+    padding:0.8rem !important;
+}
+
+.myTable th { 
+background-color: #344150 !important;
+}
+
+@media screen and (max-width: 1366px) {
+  table,thead,th,td {
+    font-size: 13px;
+    font-family: 'Lato';
+  }
+}
+
+.profile-text {
+  color: rgb(172, 166, 166);
+  font-size: 14px;
+  font-family: 'Lato';
+}
+
+
+/* ========LOGIN NEW========= */
+
+.register{
+  background: -webkit-linear-gradient(left, #344150, #7997b9);
+  margin-top: 3%;
+  padding: 3%;
+}
+.register-left{
+  text-align: center;
+  color: #fff;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.register-left input{
+  border: none;
+  border-radius: 1.5rem;
+  padding: 2%;
+  width: 60%;
+  background: #f8f9fa;
+  font-weight: bold;
+  color: #383d41;
+  margin-top: 30%;
+  margin-bottom: 3%;
+  cursor: pointer;
+}
+.register-right{
+  background: #fff;
+  border-top-left-radius: 10% 50%;
+  border-bottom-left-radius: 10% 50%;
+}
+.register-left img{
+  margin-top: 15%;
+  margin-bottom: 5%;
+  width: 50%;
+  -webkit-animation: mover 2s infinite  alternate;
+  animation: mover 1s infinite  alternate;
+}
+@-webkit-keyframes mover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
+@keyframes mover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
+.register-left p{
+  font-weight: lighter;
+  padding: 12%;
+  margin-top: -9%;
+}
+
+.register .login-form{
+  padding: 5%;
+  margin-top: 13%;
+  margin-bottom: 14% !important;
+}
+.register .register-form{
+  padding: 5%;
+  margin-top: 10%;
+}
+.btnRegister{
+  float: right;
+  margin-top: 10%;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 2%;
+  background: #0062cc;
+  color: #fff;
+  font-weight: 600;
+  width: 50%;
+  cursor: pointer;
+}
+.register .nav-tabs{
+  margin-top: 3%;
+  border: none;
+  background: #5A50FF;
+  border-radius: 1.5rem;
+  width: 28%;
+  float: right;
+}
+.register .nav-tabs .nav-link{
+  padding: 2%;
+  height: 34px;
+  width: 100% !important;
+  font-weight: 600;
+  color: #fff;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+.register .nav-tabs .nav-link:hover{
+  border: none;
+}
+.register .nav-tabs .nav-link.active{
+  width: 100px;
+  color: #0062cc;
+  border: 2px solid #0062cc;
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+}
+.register-heading{
+  text-align: center;
+  margin-top: 8%;
+  margin-bottom: -15%;
+  color: #495057;
+}

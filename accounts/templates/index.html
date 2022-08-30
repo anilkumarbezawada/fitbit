@@ -1,8 +1,6 @@
-
 <!DOCTYPE html>
 <html>
     <head>
-
         {% load static %}
     
         <meta charset="UTF-8">
@@ -14,44 +12,62 @@
         <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
         <script src="{% static 'js/popper-1.14.7.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/logo.jpg' %}">
-    
-        <title>FITBIT</title>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/fav.jpg' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <title>Get Access Fitbit</title>
 
         <style>
-            
-            .btn {
+           {% comment %} .main-btn{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: 0.5s ease;
+            background: rgb(0, 0, 0);
+           } {% endcomment %}
+            .btn-primary {
               background-color: ForestGreen;
               border: none;
               color: white;
-              padding: 12px 30px;
+              {% comment %} padding: 12px 30px; {% endcomment %}
               cursor: pointer;
               font-size: 20px;
-              position: absolute;
-              top: 30%;
-              left: 45%;
+
             }
             /* Darker background on mouse-over */
             .btn:hover {
               background-color: LimeGreen;
             }
-            </style>
+            .center { 
+                height: 550px;
+                position: relative;
+              }
+              
+              .center button {
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+              }
+        </style>
     </head>
 
     <body>
-        <div class="container-fluid">
-            <!-- head title -->
-            <header>
-                <h5 class="head text-white text-center p-3">Welcome</h5>
-            </header>
+        <div class="container-fluid center">
             <!-- live development-->
             <button  onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=https%3A%2F%2Fsvasana.com%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';" class="btn"> Connect Fitbit</button>
-
             
             <!-- local development -->
-            {% comment %} <button  onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238GRZ&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';" class="btn"> Connect Fitbit</button> {% endcomment %}
-
+            <!-- <button type="button" class="btn rounded-pill text-light" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238GRZ&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';">Connect Fitbit</button> -->
         </div>
+        
     </body>
+
 
 </html>

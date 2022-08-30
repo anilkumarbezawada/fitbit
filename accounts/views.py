@@ -2,11 +2,12 @@ import datetime
 import json
 from queue import Empty
 import sys,os
+from tkinter.messagebox import Message
 from urllib import response
 from wsgiref.util import FileWrapper
 import django
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 import pymysql
@@ -14,6 +15,8 @@ import requests
 from django.contrib.auth.models import User
 from dateutil.relativedelta import relativedelta
 import csv
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 
 import sys
 sys.path.append( "/path/to/mysite" )
@@ -28,36 +31,79 @@ def dbconnection():
     connection = pymysql.connect(host=dbHost,database=dbName,user=dbUsername,password=dbPassword)
     return connection
 
+def registrationView(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
+        print('medhod - registrationView',request.method)
+        reg_name = request.POST.get('reg_name')
+        reg_email = request.POST.get('reg_email')
+        reg_password = request.POST.get('reg_password')
+        conf_password = request.POST.get('conf_password')
+        reg_date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        print('reg_name===>',reg_name)
+        print('reg_email===>',reg_email)
+        print('reg_password===>',reg_password)
+        print('conf_password===>',conf_password)
+
+        if reg_name and reg_email and reg_password and conf_password:
+            connection = dbconnection()
+            with connection.cursor() as cursor:
+                cursor.execute("select email from doctor_reg where email=%s", (str(reg_email),))
+                row = cursor.fetchone()
+                print('doctor registration row--------',row)
+                if row is not None:
+                    print('Email alredy exists')
+                    messages.error(request,'Email alredy exists')
+                    return redirect('/')
+                else:
+                    print('INSERT INTO doctor_reg')
+                    sql = "INSERT INTO doctor_reg (name,email,password,created_date) VALUES ('"+str(reg_name)+"','"+str (reg_email)+"','"+str(reg_password)+"','"+str(reg_date_time)+"')"
+                    cursor.execute(sql)
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
+                    messages.error(request,'Registered successfully, Please login to proceed')
+                    return redirect('loginView')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login_new.html', {'form': form})
+
 def loginView(request):
-    print('medhoddddddd',request.method)
-    reg_name = request.POST.get('reg_name')
-    email = request.POST.get('email')
-    password = request.POST.get('password')
-    conf_password = request.POST.get('conf_password')
-    reg_date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    print('reg_date_timeeeeeeeeeeeeeeeeeeee===>',reg_date_time)
+    if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
+        print('medhod - loginView',request.method)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-    print('name===>',reg_name)
-    print('email===>',email)
-    print('password===>',password)
-    print('conf_password===>',conf_password)
+        print('email===>',email)
+        print('password===>',password)
 
-    if reg_name is not None:
-        connection = dbconnection()
-        with connection.cursor() as cursor:
-            cursor.execute("select email from doctor_reg where email=%s", (str(email),))
-            row = cursor.fetchone()
-            print('doctor registration row--------',row)
-            if row is not None:
-                print('Email alredy exists')
-            else:
-                print('INSERT INTO doctor_reg')
-                sql = "INSERT INTO doctor_reg (name,email,password,created_date) VALUES ('"+str(reg_name)+"','"+str(email)+"','"+str(password)+"','"+str(reg_date_time)+"')"
-                cursor.execute(sql)
-                connection.commit()
-                cursor.close()
-                connection.close()
+        if email and password:
+            connection = dbconnection()
+            with connection.cursor() as cursor:
+                cursor.execute("select email, password from doctor_reg where email=%(email)s and password=%(password)s",    {'email': str(email),'password': str(password)})
+                row = cursor.fetchone()
+                print('doctor log list row--------',row)
+                if row is not None:
+                    print('Login Successfully')
+                    request.session['role'] = 'doctor'
+                    return redirect('users/')
+                else:
+                    print('user not found')
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
+                    messages.error(request,'Invalid username or password')
+                    return redirect('loginView')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login_new.html', {'form': form})
 
+def loginViewNew(request):
+    return render(request,'login_new.html')
+
+def logout(request):
     return render(request,'login.html')
 
 def indexView(request):
@@ -115,7 +161,7 @@ def redirectView(request):
        
 
 def profiledashboard(request):
-    print('profileeeeeeeeeeedashboarddddddddddddddddddd============>')
+    print('profiledashboard============>')
     url = "https://api.fitbit.com/1/user/-/profile.json"
 
     header = {
@@ -126,7 +172,6 @@ def profiledashboard(request):
     response = requests.get(url,headers=header).json()
     # print("Fitbit User Profile Data")
     # print('Profile result===>',response)
-    #return render(request,'dashboard.html',{'profileResult':response})
         
     name = response['user']['fullName']
     age = response['user']['age']
@@ -153,8 +198,7 @@ def profiledashboard(request):
             connection.commit()
             cursor.close()
             connection.close()
-    # del request.session['userId']  
-    # return JsonResponse({"profileResult":response}, status = 200)
+    # del request.session['userId']
     getbulksleepdata(request);
     return render(request,'dashboard.html',{'profileResult':response})
         
@@ -181,25 +225,32 @@ def getsleepdata(request):
 
 
 def registeredUsersView(request):
-    connection = dbconnection()
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM profile_token")
-        usersRows = cursor.fetchall()
-        connection.commit()
-        connection.close()
-        # print('users-row--------',usersRows)
-        if usersRows is not None:
-            user_list = [dict(zip(("name","reg_date_time"),vv)) for vv in usersRows]
-            print('user_list--------',user_list)
-        else:
-            print('users-row--------NO RECORDS FOUND')
-    # return render(request,'registered_users.html')
-    return render(request,'registered_users.html',{'usersListResonse':usersRows})
+    if request.session['role'] :
+        print('LOGIN ROLE--------',request.session['role'])
+        connection = dbconnection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM profile_token")
+            usersRows = cursor.fetchall()
+            connection.commit()
+            connection.close()
+            # print('users-row--------',usersRows)
+            if usersRows is not None:
+                user_list = [dict(zip(("name","reg_date_time"),vv)) for vv in usersRows]
+                print('user_list--------',user_list)
+            else:
+                print('users-row--------NO RECORDS FOUND')
+        return render(request,'registered_users.html',{'usersListResonse':usersRows})
+    
+    else:
+        form = AuthenticationForm()
+    messages.error(request,'Unauthorized access')
+    return render(request, 'registered_users.html', {'form': form})
+    
 
 
 def getbulksleepdata(request):
 
-    from_date = datetime.date.today() - relativedelta(months=1)
+    from_date = datetime.date.today() - relativedelta(months=2)
     to_date = datetime.datetime.now().strftime ("%Y-%m-%d")
     print('#####from_date&&&to_date#####',from_date,to_date)
 
@@ -328,3 +379,35 @@ def exportsleepdata(request):
             print('exportsleepdata-row--------NO RECORDS FOUND')
 
     return JsonResponse({"getsleepdataresult":response}, status = 200)
+
+def getindivsleepdata(request):
+    
+    print('individualExportSleepData===>')
+
+    from_date = request.POST['fdate']
+    to_date = request.POST['tdate']
+    userID = request.session['userId']
+    print('from_date-row--------',from_date)
+    print('to_date-row--------',to_date)
+    print('userID-row--------',userID)
+
+    connection = dbconnection()
+    with connection.cursor() as cursor:
+        
+
+        cursor.execute("SELECT user_id,sleep_date,start_time,end_time,minutes_asleep, minutes_awake,no_of_awakenings,time_in_bed,minutes_deep_sleep,minutes_rem,minutes_light_sleep FROM sleep_data where user_id=%(user_id)s and sleep_date between %(sleep_date)s and %(sleep_date1)s",{'user_id': str(userID),'sleep_date': str(from_date),'sleep_date1': str(to_date)})
+
+        individualexportsleepdataRows = cursor.fetchall()
+        connection.commit()
+        connection.close()
+        # print('individualExportSleepData-row--------',individualexportsleepdataRows)
+        if individualexportsleepdataRows is not None:
+            indiv_exportsleepdata_list = [dict(zip(("user_id","sleep_date","start_time","end_time","minutes_asleep", "minutes_awake","no_of_awakenings","time_in_bed","minutes_deep_sleep","minutes_rem","minutes_light_sleep" ),vv)) for vv in individualexportsleepdataRows]
+            
+            response = indiv_exportsleepdata_list
+            print('$$$$$$$$$$$$$$$$$$$$$--------',response)
+            
+        else:
+            print('exportsleepdata-row--------NO RECORDS FOUND')
+
+    return JsonResponse({"getindivsleepdataresult":response}, status = 200)
