@@ -36,6 +36,38 @@
     .text-success {
       border: 0px solid;
     }
+
+    .dropdown:hover .dropdown-menu:hover {
+      display: block;
+
+    }
+    .dropdown-item:hover{
+      display: block;
+      width: 100%;
+      padding: 0.25rem 1rem;
+      clear: both;
+      font-weight: 400;
+      color: #fff;
+      text-align: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background-color: #d3d3d3cf !important;
+      border: 0;
+  }
+    .btn-close {
+      box-sizing: border-box;
+      width: 1em !important;
+      height: 1em;
+      padding: 0.25em 0.25em;
+      color: #000;
+      background: transparent url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e) center/1em auto no-repeat;
+      border: 0;
+      border-radius: 0.25rem;
+      opacity: .5;
+    }
+
+    
+    
   </style>
 </head>
 
@@ -48,11 +80,11 @@
   {% endfor %}
 
 
-  <nav class="navbar navbar-dark bg-dark p-2 box_shadow">
-    <div class="container-fluid p-0 me-3">
+  <nav class="navbar navbar-dark p-2 box_shadow">
+    <div class="container-fluid p-0">
       <div class="flex-row d-flex justify-content-center align-item-center">
         <div class="div">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="">
             <img
               src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
               class="rounded img-fluid" width="70" height="70">
@@ -60,28 +92,28 @@
         </div class="">
         <div class="navbar-brand fs-3 mt-2">NYDRA WELL</div>
       </div>
-      {% comment %} <a class="navbar-brand">Registered Users</a> {% endcomment %}
-      
       <form class="d-flex">
-        <button class="btn rounded-pill text-light me-4" type="button" id='export_sleep_data'>Export Sleep Data
+        <button hidden class="btn rounded-pill text-light me-4" type="button" id='export_sleep_data0'>Export Sleep Data
         </button>
-
-        <!-- <p hidden id="p1">http://127.0.0.1:8000/access/</p> -->
+        {% comment %} <p hidden id="p1">http://127.0.0.1:8000/access/</p> {% endcomment %}
         <p hidden id="p1">https://svasana.com/access/</p>
-
-        <button class="btn reed rounded-pill text-light me-4 px-3" type="button" onclick="copyToClipboard('#p1')"> Share
+        <button hidden class="btn reed rounded-pill text-light me-4 px-3" type="button" onclick="copyToClipboard('#p1')" > Share
           Link</button>
-
-        <div class="dropdown dropstart mt-1">
-          <a class="dropdown text-light" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa fa-bars" aria-hidden="true"></i>
+        <div class="dropdown mt-1  me-5 pe-5">
+          <a class="dropdown text-light" href="" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="../../static/photos/doctor-icon.jpg" width="60" height="60"class="img-fluid rounded-pill" alt=""  />
           </a>
-          <ul class="dropdown-menu mt-4" aria-labelledby="dropdownMenuLink">
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" >
+
+            <li><a class="dropdown-item bg-light" onclick="copyToClipboard('#p1')" tabindex="-1" href="" data-bs-toggle="modal" data-bs-target="#exampleModal">Share Link</a></li>
+            
+            {% comment %} <p hidden id="p1">http://127.0.0.1:8000/access/</p> {% endcomment %}
+            <p hidden id="p1">https://svasana.com/access/</p>
+            
+            <li><a class="dropdown-item bg-light" tabindex="-1" id='export_sleep_data' href="" >Group Export</a></li>
             <li><a class="dropdown-item bg-light" href="/">Logout</a></li>
           </ul>
         </div>
-
-
       </form>
     </div>
   </nav>
@@ -111,6 +143,19 @@
       </div>
     </div>
   </div>
+  
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Link copied</h5>
+        <button type="button" class="btn-close text-end" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+  
+    </div>
+  </div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
@@ -144,14 +189,14 @@
 
 
   // 👇️ this runs Export Sleep Data
-  $('#export_sleep_data').click(function () {
+  $('#export_sleep_data').click(function () {debugger
 
     $.ajax({
       type: 'POST',
       url: "{% url 'exportsleepdata' %}",
       data: { csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val() },
       success: function (response) {
-        console.log(response);
+        //  console.log(response);
 
         var items = response.getsleepdataresult
 
@@ -165,9 +210,9 @@
         // Display JSON
         $('#json').text(jsonObject);
 
-        {% comment %} $.each(jsonObject, function (k, v) {
-          console.log(k + '------' + v);
-        }); {% endcomment %}
+        //  $.each(jsonObject, function(k, v) {
+        //   console.log(k + '------'+ v);
+        // }); 
 
         //Convert JSON to CSV & Display CSV
         $('#csv').text(ConvertToCSV(jsonObject));

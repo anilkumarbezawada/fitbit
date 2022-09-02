@@ -1,6 +1,5 @@
-from django.urls import include, path
+from django.urls import path
 from . import views
-from django.contrib.auth.views import LoginView,LogoutView
 urlpatterns = [
 
     # path('users/',views.registeredUsersView,name="users"),
@@ -16,6 +15,6 @@ urlpatterns = [
     path('profiledashboard/',views.profiledashboard,name="profiledashboard"),
     path('getsleepdata/',views.getsleepdata,name="getsleepdata"),
     path('getindivsleepdata/',views.getindivsleepdata,name="getindivsleepdata"),
-   
+
     # path('dashboard/',views.dashboardView_sleep,name="dashboard1"),
 ]

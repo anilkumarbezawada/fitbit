@@ -1,73 +1,70 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        {% load static %}
+
+<head>
+  {% load static %}
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+  <script src="{% static 'js/popper-1.14.7.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/fav.jpg' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>Get Access Fitbit</title>
+
+  <style>
+    .main-body {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      width: 100%;
+      height: 83%;
+      flex-direction: column;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark p-2 box_shadow navbar-bg-color">
+    <div class="container-fluid p-0">
+      <div class="flex-row d-flex justify-content-center align-item-center">
+        <div class="div">
+          <a class="navbar-brand" href="#">
+            <img
+              src="https://static.wixstatic.com/media/3f81e5_11a00765e38343aea49a021ace984247~mv2.png/v1/fill/w_154,h_162,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Nydra_Health__edited_edited.png"
+              class="rounded img-fluid" width="70" height="70">
+          </a>
+        </div class="">
+        <div class="navbar-brand fs-3 mt-4">NYDRA WELL</div>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid main-body">
+    <img src="../../static/photos/connect_2.gif" class="rounded " width="28%" alt="" />
+    <br />
+    <!-- live development-->
+    <div class="mt-5">
+      <button type="button" class="btn rounded-pill text-light"
+      onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=https%3A%2F%2Fsvasana.com%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';"> Connect Fitbit</button>
+    </div>
+
     
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        <script src="{% static 'js/jquery.min.js' %}"></script>
-        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
-        <script src="{% static 'js/popper-1.14.7.js' %}"></script>
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <link rel="shortcut icon" type="image/x-icon" href="{% static 'photos/logo/fav.jpg' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <title>Get Access Fitbit</title>
+    <!-- local development -->
+    {% comment %} <div class="mt-5">
+      <button type="button" class="btn rounded-pill text-light"
+       onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238GRZ&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';">Connect Fitbit</button>
+    </div> {% endcomment %}
 
-        <style>
-           {% comment %} .main-btn{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0;
-            transition: 0.5s ease;
-            background: rgb(0, 0, 0);
-           } {% endcomment %}
-            .btn-primary {
-              background-color: ForestGreen;
-              border: none;
-              color: white;
-              {% comment %} padding: 12px 30px; {% endcomment %}
-              cursor: pointer;
-              font-size: 20px;
+  </div>
 
-            }
-            /* Darker background on mouse-over */
-            .btn:hover {
-              background-color: LimeGreen;
-            }
-            .center { 
-                height: 550px;
-                position: relative;
-              }
-              
-              .center button {
-                margin: 0;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-              }
-        </style>
-    </head>
-
-    <body>
-        <div class="container-fluid center">
-            <!-- live development-->
-            <button  onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238M7M&redirect_uri=https%3A%2F%2Fsvasana.com%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';" class="btn"> Connect Fitbit</button>
-            
-            <!-- local development -->
-            <!-- <button type="button" class="btn rounded-pill text-light" onclick="location.href='https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=238GRZ&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fviewdata&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight%20oxygen_saturation%20respiratory_rate%20temperature&expires_in=31536000';">Connect Fitbit</button> -->
-        </div>
-        
-    </body>
+</body>
 
 
 </html>

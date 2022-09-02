@@ -90,7 +90,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # }
 
 DATABASES = {
-   'default': {
+    
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Fitbit-Stage',
         'USER': 'fitbit',  

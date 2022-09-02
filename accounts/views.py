@@ -1,20 +1,12 @@
 import datetime
-import json
-from queue import Empty
-import sys,os
-from tkinter.messagebox import Message
+import sys
 from urllib import response
-from wsgiref.util import FileWrapper
-import django
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.shortcuts import render
-from django.contrib.auth.forms import UserCreationForm
 import pymysql
 import requests
-from django.contrib.auth.models import User
 from dateutil.relativedelta import relativedelta
-import csv
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -45,6 +37,7 @@ def registrationView(request):
         print('reg_email===>',reg_email)
         print('reg_password===>',reg_password)
         print('conf_password===>',conf_password)
+        
 
         if reg_name and reg_email and reg_password and conf_password:
             connection = dbconnection()
@@ -63,7 +56,7 @@ def registrationView(request):
                     connection.commit()
                     cursor.close()
                     connection.close()
-                    messages.error(request,'Registered successfully, Please login to proceed')
+                    messages.error(request,'Registered successfully, Please login to proceed.')
                     return redirect('loginView')
     else:
         form = AuthenticationForm()
@@ -94,7 +87,7 @@ def loginView(request):
                     connection.commit()
                     cursor.close()
                     connection.close()
-                    messages.error(request,'Invalid username or password')
+                    messages.error(request,'User does not exist or password is incorrect.')
                     return redirect('loginView')
     else:
         form = AuthenticationForm()
@@ -113,52 +106,50 @@ def redirectView(request):
     print('Redirect Page')
 
     if request.method == "POST":
-     global response
-     request.session['acces_token'] = request.POST.get('productId', 'default')
-     request.session['userId'] = request.POST.get('userId', 'default')
-     
-     print('Redirect Page Token====>',request.session['acces_token'])
-     print('Redirect Page userId====>',request.session['userId'])
-     url = "https://api.fitbit.com/1/user/-/profile.json"     
-     header = {
-     "Content-Type":"application/json",
-     "Authorization":"Bearer "+request.session['acces_token'],
-     }
+        global response
+        request.session['acces_token'] = request.POST.get('productId', 'default')
+        request.session['userId'] = request.POST.get('userId', 'default')
 
-     response = requests.get(url,headers=header).json()
+        print('Redirect Page Token====>',request.session['acces_token'])
+        print('Redirect Page userId====>',request.session['userId'])
+        url = "https://api.fitbit.com/1/user/-/profile.json"     
+        header = {
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+request.session['acces_token'],
+        }
 
-    #  print('redirectView Profile result===>',response)
+        response = requests.get(url,headers=header).json()
 
-     name = response['user']['fullName']
-     age = response['user']['age']
-     user_id = response['user']['encodedId']
-     request.session['acces_token']=request.session['acces_token']
-     access_token=request.session['acces_token']
-     reg_date_time = datetime.datetime.now()  
+        #print('redirectView Profile result===>',response)
 
-     getbulksleepdata(request);      
-     
-     connection = dbconnection()
-     with connection.cursor() as cursor:
-         cursor.execute("select user_id from profile_token where user_id=%s", (str(request.session['userId']),))
-         row = cursor.fetchone()
-         print('redirect profile row--------',row)
-         if row is not None:
-             sql_update_query = ("update profile_token set access_token='"+str(access_token)+"',name='"+str(name)+"',age='"+str(age)+"' where user_id='"+(str(request.session['userId']))+"'")
-             cursor.execute(sql_update_query)
-             connection.commit()
-             cursor.close()
-             connection.close()
-         else:
-             sql = "INSERT INTO profile_token (user_id,access_token,reg_date_time,name,age) VALUES ('"+str(user_id)+"','"+str(access_token)+"','"+str(reg_date_time)+"','"+str(name)+"','"+str(age)+"')"
-             cursor.execute(sql)
-             connection.commit()
-             cursor.close()
-             connection.close()
-        
-    return render(request,'dashboard.html',{'profileResult':response})
-                
-       
+        name = response['user']['fullName']
+        age = response['user']['age']
+        user_id = response['user']['encodedId']
+        request.session['acces_token']=request.session['acces_token']
+        access_token=request.session['acces_token']
+        reg_date_time = datetime.datetime.now()  
+
+        getbulksleepdata(request);      
+
+        connection = dbconnection()
+        with connection.cursor() as cursor:
+            cursor.execute("select user_id from profile_token where user_id=%s", (str(request.session['userId']),))
+            row = cursor.fetchone()
+            print('redirect profile row--------',row)
+            if row is not None:
+                sql_update_query = ("update profile_token set access_token='"+str(access_token)+"',name='"+str(name)+"',age='"+str(age)+"' where user_id='"+(str(request.session['userId']))+"'")
+                cursor.execute(sql_update_query)
+                connection.commit()
+                cursor.close()
+                connection.close()
+            else:
+                sql = "INSERT INTO profile_token (user_id,access_token,reg_date_time,name,age) VALUES ('"+str(user_id)+"','"+str(access_token)+"','"+str(reg_date_time)+"','"+str(name)+"','"+str(age)+"')"
+                cursor.execute(sql)
+                connection.commit()
+                cursor.close()
+                connection.close()
+
+    return render(request,'user_dashboard.html',{'profileResult':response})
 
 def profiledashboard(request):
     print('profiledashboard============>')
@@ -168,7 +159,6 @@ def profiledashboard(request):
     "Content-Type":"application/json",
     "Authorization":"Bearer "+request.GET['aacc'],
     }
-  
     response = requests.get(url,headers=header).json()
     # print("Fitbit User Profile Data")
     # print('Profile result===>',response)
@@ -221,7 +211,7 @@ def getsleepdata(request):
 
         return JsonResponse({"getsleepdataresult":response}, status = 200)
     else :
-       return JsonResponse({"getsleepdataresult":response}, status = 400)
+        return JsonResponse({"getsleepdataresult":response}, status = 400)
 
 
 def registeredUsersView(request):
@@ -315,12 +305,13 @@ def getbulksleepdata(request):
                 if row == ():
                     connection = dbconnection()
                     with connection.cursor() as cursor:
-                       sql = "INSERT INTO sleep_data (user_id,sleep_date,start_time,end_time,minutes_asleep,minutes_awake,no_of_awakenings,time_in_bed,minutes_rem,minutes_light_sleep, minutes_deep_sleep)     VALUES ('"+str(request.session['userId'])+"','"+str(sleep_date)+"','"    +str(start_time)+"','"+str (end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"', '"+str(no_of_awakenings)+"','"+str (time_in_bed)+"','"+str(minutes_rem)+"','"+str (minutes_light_sleep)+"','"+str(minutes_deep_sleep)+"')   "
 
-                       cursor.execute(sql)
-                       connection.commit()
-                       cursor.close()
-                       connection.close()
+                        sql = "INSERT INTO sleep_data (user_id,sleep_date,start_time,end_time,minutes_asleep,minutes_awake,no_of_awakenings,time_in_bed,minutes_rem,minutes_light_sleep, minutes_deep_sleep)     VALUES ('"+str(request.session['userId'])+"','"+str(sleep_date)+"','"    +str(start_time)+"','"+str (end_time)+"','"+str(minutes_asleep)+"','"+str(minutes_awake)+"', '"+str(no_of_awakenings)+"','"+str (time_in_bed)+"','"+str(minutes_rem)+"','"+str (minutes_light_sleep)+"','"+str(minutes_deep_sleep)+"')   "
+
+                        cursor.execute(sql)
+                        connection.commit()
+                        cursor.close()
+                        connection.close()
                 else:
                     print('Data exists on date===>',sleep_date)
         else :
@@ -329,7 +320,7 @@ def getbulksleepdata(request):
         return JsonResponse({"getsleepdataresult":response}, status = 200)
         # return render(request,'registered_users.html',{'response':response})
     else :
-       return JsonResponse({"getsleepdataresult":response}, status = 400)
+        return JsonResponse({"getsleepdataresult":response}, status = 400)
 
 def exportsleepdata(request):
     # response = HttpResponse(content_type='text/csv')
